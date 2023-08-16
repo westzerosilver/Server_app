@@ -1,42 +1,35 @@
+#include <SoftwareSerial.h>
+#include <DFRobot_DHT11.h>
 
-#define LED_01 5
-#define LED_02 6
-#define LED_03 7
- 
-#define LED_NUM 3
-unsigned int ledArray[] = { LED_01,LED_02, LED_03 } ;
-byte c;
+#define BT_RXD 2
+#define BT_TXD 3
+#define DHT11_PIN 10
+
+// 온도, 습도값 저장할 변수
+int temp = 0; 
+int humi = 0;
+
+
+
+DFRobot_DHT11 DHT;
+SoftwareSerial bluetooth(BT_RXD, BT_TXD);   
  
 void setup() {
+  // 시리얼, 블루투스 통신 시작: 속도를 9600으로 설정
   Serial.begin(9600);
- 
-  for(int i = 0 ; i < LED_NUM ; i++) {
-    pinMode(ledArray[i], OUTPUT) ;
-  }
+  bluetooth.begin(9600);
 }
  
 void loop() {
+   
+  DHT.read(DHT11_PIN);              // 온도,습도 모듈 값 읽기 
+
+  temp = DHT.temperature + 200;      // 온도 값 받아오기 
+  Serial.write(temp);                // 시리얼 통신으로 컴퓨터에 전달 
+  bluetooth.println(temp);           // 블루투스를 통해 라즈베리파이로 전달 
   
- c = 98;
- Serial.write(c);
- delay(5000);
- /*
-  if(Serial.available()) {
-      char c = Serial.read();
-//      Serial.write(c);
-      if(c == 'A') {
-            for(int i = 0 ; i < LED_NUM ; i++) {
-                digitalWrite(ledArray[i], HIGH) ;
-            }
-           return;
-      }
-      if(c == 'X') {
-            for(int i = 0 ; i < LED_NUM ; i++) {
-                digitalWrite(ledArray[i], LOW) ;
-            }
-           return;
-      }
-      int ledNum = c - '1';
-      digitalWrite(ledArray[ledNum],!digitalRead(ledArray[ledNum])) ;
-  }*/
+  humi = DHT.humidity;              // 습도 값 받아오기
+  Serial.write(humi);               
+  bluetooth.println(humi);
+  delay(10000);                     // 10초 대기 
 }
