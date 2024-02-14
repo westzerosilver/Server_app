@@ -1,4 +1,4 @@
-# arduino_app
+# server_app
 
 서버를 이용해 iOS앱과 라즈베리파이가 통신합니다.
 
